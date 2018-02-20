@@ -42,7 +42,9 @@
 #include "Kaleidoscope-LEDEffect-Breathe.h"
 
 // Support for an LED mode that makes a red pixel chase a blue pixel across the keyboard
+#ifdef ENABLE_CHASE
 // #include "Kaleidoscope-LEDEffect-Chase.h"
+#endif // ENABLE_CHASE
 
 // Support for LED modes that pulse the keyboard's LED in a rainbow pattern
 #include "Kaleidoscope-LEDEffect-Rainbow.h"
@@ -63,6 +65,8 @@
 // Support for host power management (suspend & wakeup)
 #include "Kaleidoscope-HostPowerManagement.h"
 
+// Support for ActiveModColor
+#include "Kaleidoscope-LED-ActiveModColor.h"
 
 /** This 'enum' is a list of all the macros used by the Model 01's firmware
   * The names aren't particularly important. What is important is that each
@@ -386,7 +390,10 @@ void setup() {
 
     // The HostPowerManagement plugin enables waking up the host from suspend,
     // and allows us to turn LEDs off when it goes to sleep.
-    &HostPowerManagement
+    &HostPowerManagement,
+
+    // ActiveModColor lights up the mod keys when they're active
+    &ActiveModColorEffect
   );
 
   // While we hope to improve this in the future, the NumPad plugin
