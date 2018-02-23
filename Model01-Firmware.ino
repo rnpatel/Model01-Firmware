@@ -9,8 +9,6 @@
 #define KEYCHORD_HYPER LSHIFT(LALT(LGUI(Key_LeftControl)))
 #define KEYCHORD_MEH   LSHIFT(LALT(Key_LeftGui))
 
-#define ENABLE_QUKEYS
-#define ENABLE_ONESHOT
 // #define ENABLE_MOUSEKEYS
 // #define ENABLE_CHASE
 // #define ENABLE_RAINBOW
@@ -27,15 +25,17 @@
 // The Kaleidoscope core
 #include "Kaleidoscope.h"
 
-#ifdef ENABLE_QUKEYS
 // Support for QuKeys (Dual-Use Keys)
 #include "Kaleidoscope-Qukeys.h"
-#endif // ENABLE_QUKEYS
 
-#ifdef ENABLE_ONESHOT
 // Support for Sticky Modifiers
 #include "Kaleidoscope-OneShot.h"
-#endif // ENABLE_ONESHOT
+
+// Support for multiple keys via multitap
+#include "Kaleidoscope-TapDance.h"
+
+// TopsyTurvy allows key inversion to flip keys
+#include "Kaleidoscope-TopsyTurvy.h"
 
 #ifdef ENABLE_MOUSEKEYS
 // Support for keys that move the mouse
@@ -113,6 +113,9 @@ enum { MACRO_VERSION_INFO,
 };
 
 
+enum { TAPDANCE_LEFT_BRACKET,
+       TAPDANCE_RIGHT_BRACKET };
+
 
 /** The Model 01's key layouts are defined as 'keymaps'. By default, there are three
  * keymaps: The standard QWERTY keymap, the "Function layer" keymap and the "Numpad"
@@ -170,35 +173,24 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
       //
       // left hand
       //
-      Key_Escape,      Key_1, Key_2, Key_3, Key_4, Key_5, Key_LEDEffectNext,
-      Key_Backtick,    Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
-#ifdef ENABLE_ONESHOT
-      OSM(LeftControl), Key_A, Key_S, Key_D, Key_F, Key_G,
-      OSM(LeftShift),   Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Backslash,
+      Key_Escape,      Key_1, Key_2, Key_3, Key_4, Key_5, KEYCHORD_MEH,
+      Key_Backtick,    Key_Q, Key_W, Key_E, Key_R, Key_T, TD(TAPDANCE_LEFT_BRACKET),
+      CTL_T(PageUp),   Key_A, Key_S, Key_D, Key_F, Key_G,
+      SFT_T(PageDown), Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Tab,
 
-      OSM(LeftGui), OSM(LeftControl), OSM(LeftAlt), KEYCHORD_MEH,
-#else
-      Key_LeftControl, Key_A, Key_S, Key_D, Key_F, Key_G,
-      Key_LeftShift,   Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Backslash,
+      OSM(LeftGui), OSM(LeftControl), OSM(LeftAlt), OSM(LeftShift),
 
-      Key_LeftGui, Key_LeftControl, Key_LeftAlt, KEYCHORD_MEH,
-#endif // ENABLE_ONESHOT
-
-      ShiftToLayer(FUNCTION),
+      LockLayer(FUNCTION),
 
       //
       // right hand
       //
-      KEYCHORD_HYPER, Key_6, Key_7, Key_8,     Key_9,         Key_0,         Key_Backspace,
-      Key_Enter,      Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
-                      Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
-      Key_Backspace,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
+      KEYCHORD_HYPER,             Key_6, Key_7, Key_8,     Key_9,         Key_0,         Key_Backspace,
+      TD(TAPDANCE_RIGHT_BRACKET), Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
+                                  Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
+      GUI_T(Backslash),           Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
 
-#ifdef ENABLE_ONESHOT
-      OSM(RightAlt), OSM(RightControl), OSM(RightGui), Key_Spacebar,
-#else
-      Key_RightAlt, Key_RightControl, Key_RightGui, Key_Spacebar,
-#endif // ENABLE_ONESHOT
+      OSM(RightShift), OSM(RightAlt), GUI_T(Enter), Key_Spacebar,
 
       ShiftToLayer(FUNCTION)
    ),
@@ -236,7 +228,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
       //
       // left hand
       //
-      ___,      Key_F1,          Key_F2,        Key_F3,        Key_F4,        Key_F5,           XXX,
+      ___,      Key_F1,          Key_F2,        Key_F3,        Key_F4,        Key_F5,           Key_LEDEffectNext,
 #ifdef ENABLE_MOUSEKEYS
       Key_Tab,  ___,             Key_mouseBtnL, Key_mouseUp,   Key_mouseBtnR, Key_mouseWarpEnd, Key_mouseWarpNE,
       Key_Home, ___,             Key_mouseL,    Key_mouseDn,   Key_mouseR,    Key_mouseWarpNW,
@@ -279,6 +271,23 @@ static void versionInfoMacro(uint8_t keyState) {
       Macros.type(PSTR(BUILD_INFORMATION));
    }
 }
+
+void tapDanceAction(uint8_t tap_dance_index, byte row, byte col, uint8_t tap_count,
+                    kaleidoscope::TapDance::ActionType tap_dance_action) 
+{
+    switch (tap_dance_index) 
+    {
+        case TAPDANCE_LEFT_BRACKET:
+            return tapDanceActionKeys(tap_count, tap_dance_action,
+                                      TOPSY(9), Key_LeftBracket, Key_LeftCurlyBracket);
+            break;
+        case TAPDANCE_RIGHT_BRACKET:
+            return tapDanceActionKeys(tap_count, tap_dance_action, 
+                                      TOPSY(0), Key_RightBracket, Key_RightCurlyBracket);
+            break;
+    }
+}
+
 
 /** anyKeyMacro is used to provide the functionality of the 'Any' key.
  *
@@ -381,15 +390,10 @@ void setup() {
    // The order can be important. For example, LED effects are
    // added in the order they're listed here.
    Kaleidoscope.use(
-#ifdef ENABLE_QUKEYS
-      // Qukeys does duel use keys, and should be first to minimize typing event collisions
-      &Qukeys,
-#endif // ENABLE_QUKEYS
-      
-#ifdef ENABLE_ONESHOT
-      // OneShot lets you do sticky modifiers
-      &OneShot,
-#endif // ENABLE_ONESHOT
+      &Qukeys,                  // dual-use keys; should be first to minimize typing event collisions
+      &OneShot,                 // sticky modifiers
+      &TopsyTurvy,              // flipped keys
+      &TapDance,                // multiple keybindings per key
 
       // The boot greeting effect pulses the LED button for 10 seconds after the keyboard is first connected
       &BootGreetingEffect,
