@@ -37,11 +37,6 @@
 // TopsyTurvy allows key inversion to flip keys
 #include "Kaleidoscope-TopsyTurvy.h"
 
-#ifdef ENABLE_MOUSEKEYS
-// Support for keys that move the mouse
-#include "Kaleidoscope-MouseKeys.h"
-#endif // ENABLE_MOUSEKEYS
-
 // Support for macros
 #include "Kaleidoscope-Macros.h"
 
@@ -60,31 +55,6 @@
 
 // Support for LED modes that set all LEDs to a single color
 #include "Kaleidoscope-LEDEffect-SolidColor.h"
-
-#ifdef ENABLE_BREATHE
-// Support for an LED mode that makes all the LEDs 'breathe'
-#include "Kaleidoscope-LEDEffect-Breathe.h"
-#endif // ENABLE_BREATHE
-
-#ifdef ENABLE_CHASE
-// Support for an LED mode that makes a red pixel chase a blue pixel across the keyboard
-#include "Kaleidoscope-LEDEffect-Chase.h"
-#endif // ENABLE_CHASE
-
-#ifdef ENABLE_RAINBOW
-// Support for LED modes that pulse the keyboard's LED in a rainbow pattern
-#include "Kaleidoscope-LEDEffect-Rainbow.h"
-#endif // ENABLE_RAINBOW
-
-#ifdef ENABLE_STALKER
-// Support for an LED mode that lights up the keys as you press them
-#include "Kaleidoscope-LED-Stalker.h"
-#endif
-
-#ifdef ENABLE_ALPHASQUARE
-// Support for an LED mode that prints the keys you press in letters 4px high
-#include "Kaleidoscope-LED-AlphaSquare.h"
-#endif
 
 // Support for Keyboardio's internal keyboard testing mode
 #include "Kaleidoscope-Model01-TestMode.h"
@@ -229,15 +199,9 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
       // left hand
       //
       ___,      Key_F1,          Key_F2,        Key_F3,        Key_F4,        Key_F5,           Key_LEDEffectNext,
-#ifdef ENABLE_MOUSEKEYS
-      Key_Tab,  ___,             Key_mouseBtnL, Key_mouseUp,   Key_mouseBtnR, Key_mouseWarpEnd, Key_mouseWarpNE,
-      Key_Home, ___,             Key_mouseL,    Key_mouseDn,   Key_mouseR,    Key_mouseWarpNW,
-      Key_End,  Key_PrintScreen, Key_Insert,    Key_mouseBtnM, ___,           Key_mouseWarpSW,  Key_mouseWarpSE,
-#else
       Key_Tab,  ___,             ___,           ___,           ___,           ___,              ___,
       Key_Home, ___,             ___,           ___,           ___,           ___,               
       Key_End,  Key_PrintScreen, Key_Insert,    ___,           ___,           ___,              ___,
-#endif ENABLE_MOUSEKEYS
 
       ___, Key_Delete, ___, ___,
 
@@ -340,15 +304,16 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 // Keyboardio Model 01.
 
 
-static kaleidoscope::LEDSolidColor solidRed(160, 0, 0);
-static kaleidoscope::LEDSolidColor solidOrange(140, 70, 0);
-static kaleidoscope::LEDSolidColor solidYellow(130, 100, 0);
+// static kaleidoscope::LEDSolidColor solidRed(160, 0, 0);
+// static kaleidoscope::LEDSolidColor solidOrange(140, 70, 0);
+// static kaleidoscope::LEDSolidColor solidYellow(130, 100, 0);
 // static kaleidoscope::LEDSolidColor solidGreen(0, 160, 0);
-static kaleidoscope::LEDSolidColor solidGreen(0, 100, 0);
-static kaleidoscope::LEDSolidColor solidBlue(0, 70, 130);
-static kaleidoscope::LEDSolidColor solidIndigo(0, 0, 170);
-static kaleidoscope::LEDSolidColor solidViolet(130, 0, 120);
+// static kaleidoscope::LEDSolidColor solidBlue(0, 70, 130);
+// static kaleidoscope::LEDSolidColor solidIndigo(0, 0, 170);
+// static kaleidoscope::LEDSolidColor solidViolet(130, 0, 120);
 
+static kaleidoscope::LEDSolidColor rajGreen(0, 100, 0);
+static kaleidoscope::LEDSolidColor rajOrange(128, 64, 32);
 
 /** toggleLedsOnSuspendResume toggles the LEDs off when the host goes to sleep,
  * and turns them back on when it wakes up.
@@ -382,7 +347,8 @@ void hostPowerManagementEventHandler(kaleidoscope::HostPowerManagement::Event ev
  * Kaleidoscope and any plugins.
  */
 
-void setup() {
+void setup() 
+{
    // First, call Kaleidoscope's internal setup function
    Kaleidoscope.setup();
 
@@ -407,41 +373,9 @@ void setup() {
       // We start with the LED effect that turns off all the LEDs.
       &LEDOff,
 
-#ifdef ENABLE_RAINBOW
-      // The rainbow effect changes the color of all of the keyboard's keys at the same time
-      // running through all the colors of the rainbow.
-      &LEDRainbowEffect,
-
-      // The rainbow wave effect lights up your keyboard with all the colors of a rainbow
-      // and slowly moves the rainbow across your keyboard
-      &LEDRainbowWaveEffect,
-#endif // ENABLE_RAINBOW
-
-#ifdef ENABLE_CHASE
-      // The chase effect follows the adventure of a blue pixel which chases a red pixel across
-      // your keyboard. Spoiler: the blue pixel never catches the red pixel
-      &LEDChaseEffect,
-#endif // ENABLE_CHASE
-
       // These static effects turn your keyboard's LEDs a variety of colors
       // &solidRed, &solidOrange, &solidYellow, &solidGreen, &solidBlue, &solidIndigo, &solidViolet,
-      &solidGreen,
-
-#ifdef ENABLE_BREATHE
-      // The breathe effect slowly pulses all of the LEDs on your keyboard
-      &LEDBreatheEffect,
-#endif // ENABLE_BREATHE
-
-#ifdef ENABLE_ALPHASQUARE
-      // The AlphaSquare effect prints each character you type, using your
-      // keyboard's LEDs as a display
-      &AlphaSquareEffect,
-#endif // ENABLE_ALPHASQUARE
-
-#ifdef ENABLE_STALKER
-      // The stalker effect lights up the keys you've pressed recently
-      &StalkerEffect,
-#endif // ENABLE_STALKER
+      &rajOrange, &rajGreen,
 
       // The numpad plugin is responsible for lighting up the 'numpad' mode
       // with a custom LED effect
@@ -449,11 +383,6 @@ void setup() {
 
       // The macros plugin adds support for macros
       &Macros,
-
-#ifdef ENABLE_MOUSEKEYS
-      // The MouseKeys plugin lets you add keys to your keymap which move the mouse.
-      &MouseKeys,
-#endif // ENABLE_MOUSEKEYS
 
       // The HostPowerManagement plugin enables waking up the host from suspend,
       // and allows us to turn LEDs off when it goes to sleep.
@@ -466,25 +395,6 @@ void setup() {
    // While we hope to improve this in the future, the NumPad plugin
    // needs to be explicitly told which keymap layer is your numpad layer
    NumPad.numPadLayer = NUMPAD;
-
-#ifdef ENABLE_ALPHASQUARE
-   // We configure the AlphaSquare effect to use RED letters
-   AlphaSquare.color = { 255, 0, 0 };
-#endif // ENABLE_ALPHASQUARE
-
-#ifdef ENABLE_RAINBOW
-   // We set the brightness of the rainbow effects to 150 (on a scale of 0-255)
-   // This draws more than 500mA, but looks much nicer than a dimmer effect
-   LEDRainbowEffect.brightness(150);
-   LEDRainbowWaveEffect.brightness(150);
-#endif // ENABLE_RAINBOW
-
-#ifdef ENABLE_STALKER
-   // The LED Stalker mode has a few effects. The one we like is
-   // called 'BlazingTrail'. For details on other options,
-   // see https://github.com/keyboardio/Kaleidoscope-LED-Stalker
-   StalkerEffect.variant = STALKER(BlazingTrail);
-#endif // ENABLE_STALKER
 
    // We want the keyboard to be able to wake the host up from suspend.
    HostPowerManagement.enableWakeup();
