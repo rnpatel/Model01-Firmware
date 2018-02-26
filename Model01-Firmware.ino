@@ -144,25 +144,25 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
       // left hand
       //
       Key_Escape,      Key_1, Key_2, Key_3, Key_4, Key_5, KEYCHORD_MEH,
-      Key_Backtick,    Key_Q, Key_W, Key_E, Key_R, Key_T, TD(TAPDANCE_LEFT_BRACKET),
-      CTL_T(PageUp),   Key_A, Key_S, Key_D, Key_F, Key_G,
-      SFT_T(PageDown), Key_Z, Key_X, Key_C, Key_V, Key_B, Key_Tab,
+      Key_Backtick,    Key_Q, Key_W, Key_E, Key_R, Key_T, Key_Tab,
+      Key_LeftControl, Key_A, Key_S, Key_D, Key_F, Key_G,
+      Key_LeftShift,   Key_Z, Key_X, Key_C, Key_V, Key_B, TD(TAPDANCE_LEFT_BRACKET),
 
-      OSM(LeftGui), OSM(LeftControl), OSM(LeftAlt), OSM(LeftShift),
+      OSM(LeftControl), OSM(LeftAlt), OSM(LeftGui), OSM(LeftShift),
 
-      LockLayer(FUNCTION),
+      ShiftToLayer(FUNCTION),
 
       //
       // right hand
       //
       KEYCHORD_HYPER,             Key_6, Key_7, Key_8,     Key_9,         Key_0,         Key_Backspace,
-      TD(TAPDANCE_RIGHT_BRACKET), Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
+      Key_Enter,                  Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
                                   Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
-      GUI_T(Backslash),           Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
+      TD(TAPDANCE_RIGHT_BRACKET), Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
 
-      OSM(RightShift), OSM(RightAlt), GUI_T(Enter), Key_Spacebar,
+      OSM(RightShift), OSM(RightAlt), CTL_T(Backslash), Key_Spacebar,
 
-      ShiftToLayer(FUNCTION)
+      LockLayer(FUNCTION)
    ),
 
 
@@ -198,10 +198,10 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
       //
       // left hand
       //
-      ___,      Key_F1,          Key_F2,        Key_F3,        Key_F4,        Key_F5,           Key_LEDEffectNext,
-      Key_Tab,  ___,             ___,           ___,           ___,           ___,              ___,
-      Key_Home, ___,             ___,           ___,           ___,           ___,               
-      Key_End,  Key_PrintScreen, Key_Insert,    ___,           ___,           ___,              ___,
+      ___,          Key_F1,          Key_F2,     Key_F3, Key_F4, Key_F5, Key_LEDEffectNext,
+      Key_Tab,      ___,             ___,        ___,    ___,    ___,    ___,
+      Key_PageUp,   ___,             ___,        ___,    ___,    ___,
+      Key_PageDown, Key_PrintScreen, Key_Insert, ___,    ___,    ___,    ___,
 
       ___, Key_Delete, ___, ___,
 
