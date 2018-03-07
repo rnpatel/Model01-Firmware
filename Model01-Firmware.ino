@@ -148,7 +148,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
       Key_LeftControl, Key_A, Key_S, Key_D, Key_F, Key_G,
       Key_LeftShift,   Key_Z, Key_X, Key_C, Key_V, Key_B, TD(TAPDANCE_LEFT_BRACKET),
 
-      OSM(LeftControl), OSM(LeftAlt), OSM(LeftGui), OSM(LeftShift),
+      CTL_T(Spacebar), OSM(LeftAlt), OSM(LeftGui), OSM(LeftShift),
 
       ShiftToLayer(FUNCTION),
 
