@@ -160,7 +160,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
                                   Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
       TD(TAPDANCE_RIGHT_BRACKET), Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
 
-      OSM(RightShift), OSM(RightAlt), GUI_T(Backslash), Key_Spacebar,
+      OSM(RightShift), OSM(RightAlt), Key_Backslash, Key_Spacebar,
 
       LockLayer(FUNCTION)
    ),
