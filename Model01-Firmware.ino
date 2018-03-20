@@ -198,10 +198,10 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
       //
       // left hand
       //
-      LockLayer(NUMPAD), Key_F1,          Key_F2,     Key_F3, Key_F4, Key_F5, Key_LEDEffectNext,
-      Key_Tab,           ___,             ___,        ___,    ___,    ___,    ___,
-      Key_PageUp,        ___,             ___,        ___,    ___,    ___,
-      Key_PageDown,      Key_PrintScreen, Key_Insert, ___,    ___,    ___,    ___,
+      LockLayer(NUMPAD), Key_F1,   Key_F2,     Key_F3, Key_F4, Key_F5, Key_LEDEffectNext,
+      Key_Tab,           ___,      ___,        ___,    ___,    ___,    ___,
+      Key_PageUp,        Key_Home, ___,        ___,    ___,    ___,
+      Key_PageDown,      Key_End,  Key_Insert, ___,    ___,    ___,    Key_PrintScreen,
 
       ___, Key_Delete, ___, ___,
 
@@ -210,10 +210,10 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
       //
       // right hand
       //
-      Consumer_Mute,            Key_F6,            Key_F7,                     Key_F8,                  Key_F9,                 Key_F10,               ___,
-      Consumer_VolumeIncrement, Key_LeftBracket,   XXX,                        Key_UpArrow,             XXX,                    Key_LeftCurlyBracket,  Key_F11,
-                                Key_RightBracket,  Key_LeftArrow,              Key_DownArrow,           Key_RightArrow,         Key_RightCurlyBracket, Key_F12,
-      Consumer_VolumeDecrement, Key_PcApplication, Consumer_ScanPreviousTrack, Consumer_PlaySlashPause, Consumer_ScanNextTrack, Key_Backslash,         Key_Pipe,
+      Consumer_Mute,            Key_F6,            Key_F7,                     Key_F8,                  Key_F9,                 Key_F10, ___,
+      Consumer_VolumeIncrement, XXX,               XXX,                        Key_UpArrow,             XXX,                    XXX,     Key_F11,
+                                XXX,               Key_LeftArrow,              Key_DownArrow,           Key_RightArrow,         XXX,     Key_F12,
+      Consumer_VolumeDecrement, Key_PcApplication, Consumer_ScanPreviousTrack, Consumer_PlaySlashPause, Consumer_ScanNextTrack, XXX,     XXX,
 
       ___, ___, Key_Enter, ___,
 
