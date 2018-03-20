@@ -403,6 +403,9 @@ void setup()
    // This avoids over-taxing devices that don't have a lot of power to share
    // with USB devices
    LEDOff.activate();
+
+   ActiveModColorEffect.highlight_color = CRGB(0xd0, 0xd0, 0xd0);
+   ActiveModColorEffect.sticky_color    = CRGB(0xd0, 0xd0, 0x00);
 }
 
 /** loop is the second of the standard Arduino sketch functions.
