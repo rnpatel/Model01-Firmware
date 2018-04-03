@@ -160,7 +160,7 @@ const Key keymaps[][ROWS][COLS] PROGMEM = {
                                   Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
       TD(TAPDANCE_RIGHT_BRACKET), Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
 
-      OSM(RightShift), OSM(RightAlt), Key_Backslash, Key_Spacebar,
+      OSM(RightAlt), OSM(RightGui), Key_Backslash, Key_Spacebar,
 
       ShiftToLayer(FUNCTION)
    ),
@@ -314,6 +314,7 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 
 static kaleidoscope::LEDSolidColor rnpGreen(0, 100, 0);
 static kaleidoscope::LEDSolidColor rnpOrange(128, 64, 32);
+static kaleidoscope::LEDSolidColor rnpBlue(27, 101, 144);
 
 /** toggleLedsOnSuspendResume toggles the LEDs off when the host goes to sleep,
  * and turns them back on when it wakes up.
@@ -375,7 +376,7 @@ void setup()
 
       // These static effects turn your keyboard's LEDs a variety of colors
       // &solidRed, &solidOrange, &solidYellow, &solidGreen, &solidBlue, &solidIndigo, &solidViolet,
-      &rnpOrange, &rnpGreen,
+      &rnpBlue, &rnpOrange, &rnpGreen,
 
       // The numpad plugin is responsible for lighting up the 'numpad' mode
       // with a custom LED effect
