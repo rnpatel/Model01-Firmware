@@ -136,8 +136,8 @@ enum { QWERTY, NUMPAD, FUNCTION }; // layers
  */
 // *INDENT-OFF*
 
-KEYMAPS(
-
+KEYMAPS
+(
    [QWERTY] = KEYMAP_STACKED
    (
       //
@@ -219,7 +219,7 @@ KEYMAPS(
 
       ___
    )
-};
+)
 
 /* Re-enable astyle's indent enforcement */
 // *INDENT-ON*
