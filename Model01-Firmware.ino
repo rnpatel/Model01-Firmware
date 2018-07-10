@@ -62,6 +62,12 @@
 // Support for host power management (suspend & wakeup)
 #include "Kaleidoscope-HostPowerManagement.h"
 
+// Support for magic combos (key chrods that trigger an action)
+#include "Kaleidoscope-MagicCombo.h"
+
+// Support for USB quirks, like changing the key state report protocol
+#include "Kaleidoscope-USB-Quirks.h"
+
 // Support for ActiveModColor
 #include "Kaleidoscope-LED-ActiveModColor.h"
 
@@ -85,7 +91,6 @@ enum { MACRO_VERSION_INFO,
 
 enum { TAPDANCE_LEFT_BRACKET,
        TAPDANCE_RIGHT_BRACKET };
-
 
 /** The Model 01's key layouts are defined as 'keymaps'. By default, there are three
  * keymaps: The standard QWERTY keymap, the "Function layer" keymap and the "Numpad"
@@ -343,55 +348,89 @@ void hostPowerManagementEventHandler(kaleidoscope::HostPowerManagement::Event ev
    toggleLedsOnSuspendResume(event);
 }
 
+/** This 'enum' is a list of all the magic combos used by the Model 01's
+ * firmware The names aren't particularly important. What is important is that
+ * each is unique.
+ *
+ * These are the names of your magic combos. They will be used by the
+ * `USE_MAGIC_COMBOS` call below.
+ */
+enum {
+  // Toggle between Boot (6-key rollover; for BIOSes and early boot) and NKRO
+  // mode.
+  COMBO_TOGGLE_NKRO_MODE
+};
+
+/** A tiny wrapper, to be used by MagicCombo.
+ * This simply toggles the keyboard protocol via USBQuirks, and wraps it within
+ * a function with an unused argument, to match what MagicCombo expects.
+ */
+static void toggleKeyboardProtocol(uint8_t combo_index) {
+  USBQuirks.toggleKeyboardProtocol();
+}
+
+/** Magic combo list, a list of key combo and action pairs the firmware should
+ * recognise.
+ */
+USE_MAGIC_COMBOS({.action = toggleKeyboardProtocol,
+                  // Left Fn + Esc + Shift
+                  .keys = { R3C6, R2C6, R3C7 }
+                 });
+
+// First, tell Kaleidoscope which plugins you want to use.
+   // The order can be important. For example, LED effects are
+   // added in the order they're listed here.
+KALEIDOSCOPE_INIT_PLUGINS(
+    // The boot greeting effect pulses the LED button for 10 seconds after the keyboard is first connected
+    // BootGreetingEffect,
+
+    Qukeys,     // dual-use keys; should be first to minimize typing event collisions
+    OneShot,    // sticky modifiers
+    TopsyTurvy, // flipped keys
+    TapDance,   // multiple keybindings per key
+
+    // The hardware test mode, which can be invoked by tapping Prog, LED and the left Fn button at the same time.
+    // TestMode,
+
+    // LEDControl provides support for other LED modes
+    LEDControl,
+
+    // We start with the LED effect that turns off all the LEDs.
+    LEDOff,
+
+    // These static effects turn your keyboard's LEDs a variety of colors
+    // solidRed, solidOrange, solidYellow, solidGreen, solidBlue, solidIndigo, solidViolet,
+    rnpBlue, rnpOrange, rnpGreen,
+
+    // The numpad plugin is responsible for lighting up the 'numpad' mode
+    // with a custom LED effect
+    NumPad,
+
+    // The macros plugin adds support for macros
+    Macros,
+
+    // The MagicCombo plugin lets you use key combinations to trigger custom
+    // actions - a bit like Macros, but triggered by pressing multiple keys at the
+    // same time.
+    MagicCombo,
+
+    // The USBQuirks plugin lets you do some things with USB that we aren't
+    // comfortable - or able - to do automatically, but can be useful
+    // nevertheless. Such as toggling the key report protocol between Boot (used
+    // by BIOSes) and Report (NKRO).
+    USBQuirks,
+
+    // ActiveModColor lights up the mod keys when they're active
+    ActiveModColorEffect
+    );
+
 /** The 'setup' function is one of the two standard Arduino sketch functions.
  * It's called when your keyboard first powers up. This is where you set up
  * Kaleidoscope and any plugins.
  */
-
-void setup() 
-{
-   // First, call Kaleidoscope's internal setup function
-   Kaleidoscope.setup();
-
-   // Next, tell Kaleidoscope which plugins you want to use.
-   // The order can be important. For example, LED effects are
-   // added in the order they're listed here.
-   Kaleidoscope.use(
-      // The boot greeting effect pulses the LED button for 10 seconds after the keyboard is first connected
-      // &BootGreetingEffect,
-
-      &Qukeys,                  // dual-use keys; should be first to minimize typing event collisions
-      &OneShot,                 // sticky modifiers
-      &TopsyTurvy,              // flipped keys
-      &TapDance,                // multiple keybindings per key
-
-      // The hardware test mode, which can be invoked by tapping Prog, LED and the left Fn button at the same time.
-      // &TestMode,
-
-      // LEDControl provides support for other LED modes
-      &LEDControl,
-
-      // We start with the LED effect that turns off all the LEDs.
-      &LEDOff,
-
-      // These static effects turn your keyboard's LEDs a variety of colors
-      // &solidRed, &solidOrange, &solidYellow, &solidGreen, &solidBlue, &solidIndigo, &solidViolet,
-      &rnpBlue, &rnpOrange, &rnpGreen,
-
-      // The numpad plugin is responsible for lighting up the 'numpad' mode
-      // with a custom LED effect
-      &NumPad,
-
-      // The macros plugin adds support for macros
-      &Macros,
-
-      // The HostPowerManagement plugin enables waking up the host from suspend,
-      // and allows us to turn LEDs off when it goes to sleep.
-      &HostPowerManagement,
-
-      // ActiveModColor lights up the mod keys when they're active
-      &ActiveModColorEffect
-      );
+void setup() {
+  // First, call Kaleidoscope's internal setup function
+  Kaleidoscope.setup();
 
    // While we hope to improve this in the future, the NumPad plugin
    // needs to be explicitly told which keymap layer is your numpad layer
