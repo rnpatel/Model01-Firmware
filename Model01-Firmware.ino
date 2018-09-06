@@ -62,7 +62,7 @@
 // Support for host power management (suspend & wakeup)
 #include "Kaleidoscope-HostPowerManagement.h"
 
-// Support for magic combos (key chrods that trigger an action)
+// Support for magic combos (key chords that trigger an action)
 #include "Kaleidoscope-MagicCombo.h"
 
 // Support for USB quirks, like changing the key state report protocol
@@ -134,7 +134,28 @@ enum { TAPDANCE_LEFT_BRACKET,
  *
  */
 
-enum { QWERTY, NUMPAD, FUNCTION }; // layers
+enum { PRIMARY, NUMPAD, FUNCTION }; // layers
+
+
+/**
+  * To change your keyboard's layout from QWERTY to DVORAK or COLEMAK, comment out the line
+  *
+  * #define PRIMARY_KEYMAP_QWERTY
+  *
+  * by changing it to
+  *
+  * // #define PRIMARY_KEYMAP_QWERTY
+  *
+  * Then uncomment the line corresponding to the layout you want to use.
+  *
+  */
+
+#define PRIMARY_KEYMAP_QWERTY
+// #define PRIMARY_KEYMAP_COLEMAK
+// #define PRIMARY_KEYMAP_DVORAK
+// #define PRIMARY_KEYMAP_CUSTOM
+
+
 
 /* This comment temporarily turns off astyle's indent enforcement
  *   so we can make the keymaps actually resemble the physical key layout better
