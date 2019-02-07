@@ -97,38 +97,44 @@ enum { TAPDANCE_LEFT_BRACKET,
        TAPDANCE_RIGHT_BRACKET };
 
 /** The Model 01's key layouts are defined as 'keymaps'. By default, there are three
- * keymaps: The standard QWERTY keymap, the "Function layer" keymap and the "Numpad"
- * keymap.
- *
- * Each keymap is defined as a list using the 'KEYMAP_STACKED' macro, built
- * of first the left hand's layout, followed by the right hand's layout.
- *
- * Keymaps typically consist mostly of `Key_` definitions. There are many, many keys
- * defined as part of the USB HID Keyboard specification. You can find the names
- * (if not yet the explanations) for all the standard `Key_` defintions offered by
- * Kaleidoscope in these files:
- *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_keyboard.h
- *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_consumerctl.h
- *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_sysctl.h
- *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_keymaps.h
- *
- * Additional things that should be documented here include
- *   using ___ to let keypresses fall through to the previously active layer
- *   using XXX to mark a keyswitch as 'blocked' on this layer
- *   using ShiftToLayer() and LockLayer() keys to change the active keymap.
- *   the special nature of the PROG key
- *   keeping NUM and FN consistent and accessible on all layers
- *
- *
- * The "keymaps" data structure is a list of the keymaps compiled into the firmware.
- * The order of keymaps in the list is important, as the ShiftToLayer(#) and LockLayer(#)
- * macros switch to key layers based on this list.
- *
- *
+  * keymaps: The standard QWERTY keymap, the "Function layer" keymap and the "Numpad"
+  * keymap.
+  *
+  * Each keymap is defined as a list using the 'KEYMAP_STACKED' macro, built
+  * of first the left hand's layout, followed by the right hand's layout.
+  *
+  * Keymaps typically consist mostly of `Key_` definitions. There are many, many keys
+  * defined as part of the USB HID Keyboard specification. You can find the names
+  * (if not yet the explanations) for all the standard `Key_` defintions offered by
+  * Kaleidoscope in these files:
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_keyboard.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_consumerctl.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_sysctl.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_keymaps.h
+  *
+  * Additional things that should be documented here include
+  *   using ___ to let keypresses fall through to the previously active layer
+  *   using XXX to mark a keyswitch as 'blocked' on this layer
+  *   using ShiftToLayer() and LockLayer() keys to change the active keymap.
+  *   keeping NUM and FN consistent and accessible on all layers
+  *
+  * The PROG key is special, since it is how you indicate to the board that you
+  * want to flash the firmware. However, it can be remapped to a regular key.
+  * When the keyboard boots, it first looks to see whether the PROG key is held
+  * down; if it is, it simply awaits further flashing instructions. If it is
+  * not, it continues loading the rest of the firmware and the keyboard
+  * functions normally, with whatever binding you have set to PROG. More detail
+  * here: https://community.keyboard.io/t/how-the-prog-key-gets-you-into-the-bootloader/506/8
+  *
+  * The "keymaps" data structure is a list of the keymaps compiled into the firmware.
+  * The order of keymaps in the list is important, as the ShiftToLayer(#) and LockLayer(#)
+  * macros switch to key layers based on this list.
+  *
+  *
 
- * A key defined as 'ShiftToLayer(FUNCTION)' will switch to FUNCTION while held.
- * Similarly, a key defined as 'LockLayer(NUMPAD)' will switch to NUMPAD when tapped.
- */
+  * A key defined as 'ShiftToLayer(FUNCTION)' will switch to FUNCTION while held.
+  * Similarly, a key defined as 'LockLayer(NUMPAD)' will switch to NUMPAD when tapped.
+  */
 
 /**
  * Layers are "0-indexed" -- That is the first one is layer 0. The second one is layer 1.
@@ -345,12 +351,15 @@ void tapDanceAction(uint8_t tap_dance_index, byte row, byte col, uint8_t tap_cou
  */
 
 static void anyKeyMacro(uint8_t keyState) {
-    static Key lastKey;
-    if (keyToggledOn(keyState))
-        lastKey.keyCode = Key_A.keyCode + (uint8_t)(millis() % 36);
+  static Key lastKey;
+  bool toggledOn = false;
+  if (keyToggledOn(keyState)) {
+    lastKey.keyCode = Key_A.keyCode + (uint8_t)(millis() % 36);
+    toggledOn = true;
+  }
 
-    if (keyIsPressed(keyState))
-        kaleidoscope::hid::pressKey(lastKey);
+  if (keyIsPressed(keyState))
+    kaleidoscope::hid::pressKey(lastKey, toggledOn);
 }
 
 
@@ -402,28 +411,28 @@ static kaleidoscope::LEDSolidColor rnpBlue(27, 101, 144);
 /** toggleLedsOnSuspendResume toggles the LEDs off when the host goes to sleep,
  * and turns them back on when it wakes up.
  */
-void toggleLedsOnSuspendResume(kaleidoscope::HostPowerManagement::Event event) {
-    switch (event) {
-        case kaleidoscope::HostPowerManagement::Suspend:
-            LEDControl.paused = true;
-            LEDControl.set_all_leds_to({0, 0, 0});
-            LEDControl.syncLeds();
-            break;
-        case kaleidoscope::HostPowerManagement::Resume:
-            LEDControl.paused = false;
-            LEDControl.refreshAll();
-            break;
-        case kaleidoscope::HostPowerManagement::Sleep:
-            break;
-    }
+void toggleLedsOnSuspendResume(kaleidoscope::plugin::HostPowerManagement::Event event) {
+  switch (event) {
+  case kaleidoscope::plugin::HostPowerManagement::Suspend:
+    LEDControl.set_all_leds_to({0, 0, 0});
+    LEDControl.syncLeds();
+    LEDControl.paused = true;
+    break;
+  case kaleidoscope::plugin::HostPowerManagement::Resume:
+    LEDControl.paused = false;
+    LEDControl.refreshAll();
+    break;
+  case kaleidoscope::plugin::HostPowerManagement::Sleep:
+    break;
+  }
 }
 
 /** hostPowerManagementEventHandler dispatches power management events (suspend,
  * resume, and sleep) to other functions that perform action based on these
  * events.
  */
-void hostPowerManagementEventHandler(kaleidoscope::HostPowerManagement::Event event) {
-    toggleLedsOnSuspendResume(event);
+void hostPowerManagementEventHandler(kaleidoscope::plugin::HostPowerManagement::Event event) {
+  toggleLedsOnSuspendResume(event);
 }
 
 /** This 'enum' is a list of all the magic combos used by the Model 01's
@@ -468,17 +477,21 @@ KALEIDOSCOPE_INIT_PLUGINS(
     // interface through which the keymap in EEPROM can be edited.
     Focus,
 
-    // FocusSettingsCommand adds a few Focus commands, intended to aid in changing some settings of the keyboard, such as the default layer (via the `settings.defaultLayer` command)
+    // FocusSettingsCommand adds a few Focus commands, intended to aid in
+    // changing some settings of the keyboard, such as the default layer (via the
+    // `settings.defaultLayer` command)
     FocusSettingsCommand,
 
     // FocusEEPROMCommand adds a set of Focus commands, which are very helpful in
     // both debugging, and in backing up one's EEPROM contents.
     FocusEEPROMCommand,
 
-    // The boot greeting effect pulses the LED button for 10 seconds after the keyboard is first connected
+    // The boot greeting effect pulses the LED button for 10 seconds after the
+    // keyboard is first connected
     BootGreetingEffect,
 
-    // The hardware test mode, which can be invoked by tapping Prog, LED and the left Fn button at the same time.
+    // The hardware test mode, which can be invoked by tapping Prog, LED and the
+    // left Fn button at the same time.
     TestMode,
 
     // LEDControl provides support for other LED modes
@@ -555,8 +568,9 @@ void setup() {
     // To make the keymap editable without flashing new firmware, we store
     // additional layers in EEPROM. For now, we reserve space for five layers. If
     // one wants to use these layers, just set the default layer to one in EEPROM,
-    // by using the `settings.defaultLayer` Focus command.
-    EEPROMKeymap.setup(5, EEPROMKeymap.Mode::EXTEND);
+    // by using the `settings.defaultLayer` Focus command, or by using the
+    // `keymap.onlyCustom` command to use EEPROM layers only.
+    EEPROMKeymap.setup(5);
 }
 
 /** loop is the second of the standard Arduino sketch functions.
