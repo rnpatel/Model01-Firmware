@@ -552,11 +552,6 @@ void setup() {
     // We want the keyboard to be able to wake the host up from suspend.
     HostPowerManagement.enableWakeup();
 
-    // We want to make sure that the firmware starts with LED effects off
-    // This avoids over-taxing devices that don't have a lot of power to share
-    // with USB devices
-    LEDOff.activate();
-
     ActiveModColorEffect.highlight_color = CRGB(0xd0, 0xd0, 0xd0);
     ActiveModColorEffect.sticky_color    = CRGB(0xd0, 0xd0, 0x00);
 
