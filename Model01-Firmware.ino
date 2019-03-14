@@ -60,6 +60,9 @@
 // Support for LED modes that set all LEDs to a single color
 #include "Kaleidoscope-LEDEffect-SolidColor.h"
 
+// Support for an LED mode that lets one configure per-layer color maps
+#include "Kaleidoscope-Colormap.h"
+
 // Support for Keyboardio's internal keyboard testing mode
 #include "Kaleidoscope-Model01-TestMode.h"
 
@@ -292,7 +295,7 @@ KEYMAPS(
         Key_PageUp,        Key_Home, LSHIFT(Key_LeftArrow), LSHIFT(Key_DownArrow), LSHIFT(Key_RightArrow),    ___,
         Key_PageDown,      Key_End,  Key_Insert,            ___,                   ___,                       ___,    Key_PrintScreen,
 
-        ___, Key_Delete, ___, ___,
+        ___, ___, ___, ___,
 
         ___,
 
@@ -527,6 +530,9 @@ KALEIDOSCOPE_INIT_PLUGINS(
     // same time.
     MagicCombo,
 
+    // The Colormap effect makes it possible to set up per-layer colormaps
+    ColormapEffect,
+
     // The USBQuirks plugin lets you do some things with USB that we aren't
     // comfortable - or able - to do automatically, but can be useful
     // nevertheless. Such as toggling the key report protocol between Boot (used
@@ -542,6 +548,7 @@ KALEIDOSCOPE_INIT_PLUGINS(
  * Kaleidoscope and any plugins.
  */
 void setup() {
+
     // First, call Kaleidoscope's internal setup function
     Kaleidoscope.setup();
 
@@ -566,6 +573,12 @@ void setup() {
     // by using the `settings.defaultLayer` Focus command, or by using the
     // `keymap.onlyCustom` command to use EEPROM layers only.
     EEPROMKeymap.setup(5);
+
+    // We need to tell the Colormap plugin how many layers we want to have custom
+    // maps for. To make things simple, we set it to five layers, which is how
+    // many editable layers we have (see above).
+    ColormapEffect.max_layers(5);
+
 }
 
 /** loop is the second of the standard Arduino sketch functions.
