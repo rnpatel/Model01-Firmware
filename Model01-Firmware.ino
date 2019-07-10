@@ -329,16 +329,16 @@ static void versionInfoMacro(uint8_t keyState) {
 }
 
 void tapDanceAction(uint8_t tap_dance_index, byte row, byte col, uint8_t tap_count,
-                    kaleidoscope::TapDance::ActionType tap_dance_action) 
+                    kaleidoscope::plugin::TapDance::ActionType tap_dance_action)
 {
-    switch (tap_dance_index) 
+    switch (tap_dance_index)
     {
         case TAPDANCE_LEFT_BRACKET:
             return tapDanceActionKeys(tap_count, tap_dance_action,
                                       TOPSY(9), Key_LeftBracket, Key_LeftCurlyBracket);
             break;
         case TAPDANCE_RIGHT_BRACKET:
-            return tapDanceActionKeys(tap_count, tap_dance_action, 
+            return tapDanceActionKeys(tap_count, tap_dance_action,
                                       TOPSY(0), Key_RightBracket, Key_RightCurlyBracket);
             break;
     }
@@ -407,9 +407,9 @@ const macro_t *macroAction(uint8_t macroIndex, uint8_t keyState) {
 // static kaleidoscope::LEDSolidColor solidIndigo(0, 0, 170);
 // static kaleidoscope::LEDSolidColor solidViolet(130, 0, 120);
 
-static kaleidoscope::LEDSolidColor rnpGreen(0, 100, 0);
-static kaleidoscope::LEDSolidColor rnpOrange(128, 64, 32);
-static kaleidoscope::LEDSolidColor rnpBlue(27, 101, 144);
+static kaleidoscope::plugin::LEDSolidColor rnpGreen(0, 100, 0);
+static kaleidoscope::plugin::LEDSolidColor rnpOrange(128, 64, 32);
+static kaleidoscope::plugin::LEDSolidColor rnpBlue(27, 101, 144);
 
 /** toggleLedsOnSuspendResume toggles the LEDs off when the host goes to sleep,
  * and turns them back on when it wakes up.
@@ -555,9 +555,6 @@ void setup() {
     // While we hope to improve this in the future, the NumPad plugin
     // needs to be explicitly told which keymap layer is your numpad layer
     NumPad.numPadLayer = NUMPAD;
-
-    // We want the keyboard to be able to wake the host up from suspend.
-    HostPowerManagement.enableWakeup();
 
     ActiveModColorEffect.highlight_color = CRGB(0xd0, 0xd0, 0xd0);
     ActiveModColorEffect.sticky_color    = CRGB(0xd0, 0xd0, 0x00);
