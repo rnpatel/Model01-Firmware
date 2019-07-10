@@ -303,7 +303,7 @@ KEYMAPS(
         // right hand
         //
         Consumer_Mute,            Key_F6,            Key_F7,                     Key_F8,                  Key_F9,                 Key_F10, ___,
-        Consumer_VolumeIncrement, XXX,               XXX,                        Key_UpArrow,             XXX,                    XXX,     Key_F11,
+        Consumer_VolumeIncrement, XXX,               Key_PageUp,                 Key_UpArrow,             Key_PageDown,           XXX,     Key_F11,
                                   XXX,               Key_LeftArrow,              Key_DownArrow,           Key_RightArrow,         XXX,     Key_F12,
         Consumer_VolumeDecrement, Key_PcApplication, Consumer_ScanPreviousTrack, Consumer_PlaySlashPause, Consumer_ScanNextTrack, XXX,     XXX,
 
