@@ -44,7 +44,7 @@
 #include "Kaleidoscope-LEDControl.h"
 
 // Support for "Numpad" mode, which is mostly just the Numpad specific LED mode
-#include "Kaleidoscope-NumPad.h"
+// #include "Kaleidoscope-NumPad.h"
 
 // Support for the "Boot greeting" effect, which pulses the 'LED' button for 10s
 // when the keyboard is connected to a computer (or that computer is powered on)
@@ -140,7 +140,9 @@ enum { TAPDANCE_LEFT_BRACKET,
  *
  */
 
-enum { PRIMARY, NUMPAD, FUNCTION }; // layers
+enum { PRIMARY,
+       // NUMPAD,
+       FUNCTION }; // layers
 
 
 /**
@@ -179,7 +181,7 @@ KEYMAPS(
      Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
      ShiftToLayer(FUNCTION),
 
-     M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         LockLayer(NUMPAD),
+     M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         ___/*LockLayer(NUMPAD)*/,
      Key_Enter,     Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
      Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
      Key_RightAlt,  Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
@@ -196,7 +198,7 @@ KEYMAPS(
      Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
      ShiftToLayer(FUNCTION),
 
-     M(MACRO_ANY),   Key_6, Key_7, Key_8, Key_9, Key_0, LockLayer(NUMPAD),
+     M(MACRO_ANY),   Key_6, Key_7, Key_8, Key_9, Key_0, ___/*LockLayer(NUMPAD)*/,
      Key_Enter,      Key_F, Key_G, Key_C, Key_R, Key_L, Key_Slash,
      Key_D, Key_H, Key_T, Key_N, Key_S, Key_Minus,
      Key_RightAlt,   Key_B, Key_M, Key_W, Key_V, Key_Z, Key_Equals,
@@ -213,7 +215,7 @@ KEYMAPS(
      Key_LeftControl, Key_Backspace, Key_LeftGui, Key_LeftShift,
      ShiftToLayer(FUNCTION),
 
-     M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         LockLayer(NUMPAD),
+     M(MACRO_ANY),  Key_6, Key_7, Key_8,     Key_9,         Key_0,         ___/*LockLayer(NUMPAD)*/,
      Key_Enter,     Key_J, Key_L, Key_U,     Key_Y,         Key_Semicolon, Key_Equals,
      Key_H, Key_N, Key_E,     Key_I,         Key_O,         Key_Quote,
      Key_RightAlt,  Key_K, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
@@ -247,10 +249,10 @@ KEYMAPS(
         OSM(RightAlt), OSM(RightGui), Key_Backslash, Key_Spacebar,
 
         ShiftToLayer(FUNCTION)
-        ),
+    ),
 
 #endif
-
+/*
     [NUMPAD] =  KEYMAP_STACKED
     (
         //
@@ -270,20 +272,20 @@ KEYMAPS(
         //
         M(MACRO_VERSION_INFO), ___, Key_Keypad7, Key_Keypad8,   Key_Keypad9,        Key_KeypadSubtract, ___,
         ___,                   ___, Key_Keypad4, Key_Keypad5,   Key_Keypad6,        Key_KeypadAdd,      ___,
-                               ___, Key_Keypad1, Key_Keypad2,   Key_Keypad3,        Key_Equals,         ___,
+        ___, Key_Keypad1, Key_Keypad2,   Key_Keypad3,        Key_Equals,         ___,
         ___,                   ___, Key_Keypad0, Key_KeypadDot, Key_KeypadMultiply, Key_KeypadDivide,   Key_Enter,
 
         ___, ___, ___, ___,
 
         ___
-        ),
-
+    ),
+*/
     [FUNCTION] =  KEYMAP_STACKED
     (
         //
         // left hand
         //
-        LockLayer(NUMPAD), Key_F1,   Key_F2,                Key_F3,                Key_F4,                    Key_F5, Key_LEDEffectNext,
+        ___,               Key_F1,   Key_F2,                Key_F3,                Key_F4,                    Key_F5, Key_LEDEffectNext,
         Key_Tab,           ___,      ___,                   LSHIFT(Key_UpArrow),   ___,                       ___,    ___,
         Key_PageUp,        Key_Home, LSHIFT(Key_LeftArrow), LSHIFT(Key_DownArrow), LSHIFT(Key_RightArrow),    ___,
         Key_PageDown,      Key_End,  Key_Insert,            ___,                   ___,                       ___,    Key_PrintScreen,
@@ -296,15 +298,15 @@ KEYMAPS(
         // right hand
         //
         Consumer_Mute,            Key_F6,            Key_F7,                     Key_F8,                  Key_F9,                 Key_F10, Key_Backspace,
-        Consumer_VolumeIncrement, XXX,               Key_PageUp,                 Key_UpArrow,             Key_PageDown,           XXX,     Key_F11,
-                                  XXX,               Key_LeftArrow,              Key_DownArrow,           Key_RightArrow,         XXX,     Key_F12,
-        Consumer_VolumeDecrement, Key_PcApplication, Consumer_ScanPreviousTrack, Consumer_PlaySlashPause, Consumer_ScanNextTrack, XXX,     XXX,
+        Consumer_VolumeIncrement, XXX,               Key_PageUp,                 Key_UpArrow,             Key_PageDown,           Key_F14, Key_F11,
+                                  XXX,               Key_LeftArrow,              Key_DownArrow,           Key_RightArrow,         Key_F15, Key_F12,
+        Consumer_VolumeDecrement, Key_PcApplication, Consumer_ScanPreviousTrack, Consumer_PlaySlashPause, Consumer_ScanNextTrack, Key_F16, Key_F13,
 
         ___, ___, Key_Enter, ___,
 
         ___
-        )
     )
+)
 
 /* Re-enable astyle's indent enforcement */
 // *INDENT-ON*
@@ -522,7 +524,7 @@ KALEIDOSCOPE_INIT_PLUGINS(
 
     // The numpad plugin is responsible for lighting up the 'numpad' mode
     // with a custom LED effect
-    NumPad,
+    // NumPad,
 
     // The macros plugin adds support for macros
     Macros,
@@ -556,7 +558,7 @@ void setup() {
 
     // While we hope to improve this in the future, the NumPad plugin
     // needs to be explicitly told which keymap layer is your numpad layer
-    NumPad.numPadLayer = NUMPAD;
+    // NumPad.numPadLayer = NUMPAD;
 
     ActiveModColorEffect.highlight_color = CRGB(0xd0, 0xd0, 0xd0);
     ActiveModColorEffect.sticky_color    = CRGB(0xd0, 0xd0, 0x00);
