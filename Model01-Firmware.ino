@@ -19,11 +19,11 @@
 #include "Kaleidoscope.h"
 
 // Support for storing the keymap in EEPROM
-#include "Kaleidoscope-EEPROM-Settings.h"
-#include "Kaleidoscope-EEPROM-Keymap.h"
+// #include "Kaleidoscope-EEPROM-Settings.h"
+// #include "Kaleidoscope-EEPROM-Keymap.h"
 
 // Support for communicating with the host via a simple Serial protocol
-#include "Kaleidoscope-FocusSerial.h"
+// #include "Kaleidoscope-FocusSerial.h"
 
 // Support for QuKeys (Dual-Use Keys)
 #include "Kaleidoscope-Qukeys.h"
@@ -466,14 +466,18 @@ static void enterHardwareTestMode(uint8_t combo_index) {
 /** Magic combo list, a list of key combo and action pairs the firmware should
  * recognise.
  */
-USE_MAGIC_COMBOS({.action = toggleKeyboardProtocol,
-                  // Left Fn + Esc + Shift
-                  .keys = { R3C6, R2C6, R3C7 }
-}, {
-  .action = enterHardwareTestMode,
-  // Left Fn + Prog + LED
-  .keys = { R3C6, R0C0, R0C6 }
-});
+USE_MAGIC_COMBOS(
+    {
+        .action = toggleKeyboardProtocol,
+        // Left Fn + Esc + Shift
+        .keys = { R3C6, R2C6, R3C7 }
+    },
+    {
+        .action = enterHardwareTestMode,
+        // Left Fn + Prog + LED
+        .keys = { R3C6, R0C0, R0C6 }
+    }
+);
 
 // First, tell Kaleidoscope which plugins you want to use.
 // The order can be important. For example, LED effects are
@@ -481,31 +485,29 @@ USE_MAGIC_COMBOS({.action = toggleKeyboardProtocol,
 KALEIDOSCOPE_INIT_PLUGINS(
     // The EEPROMSettings & EEPROMKeymap plugins make it possible to have an
     // editable keymap in EEPROM.
-    EEPROMSettings,
-    EEPROMKeymap,
+    // EEPROMSettings,
+    // EEPROMKeymap,
 
     // Focus allows bi-directional communication with the host, and is the
     // interface through which the keymap in EEPROM can be edited.
-    Focus,
+    // Focus,
 
     // FocusSettingsCommand adds a few Focus commands, intended to aid in
     // changing some settings of the keyboard, such as the default layer (via the
     // `settings.defaultLayer` command)
-    FocusSettingsCommand,
+    // FocusSettingsCommand,
 
     // FocusEEPROMCommand adds a set of Focus commands, which are very helpful in
     // both debugging, and in backing up one's EEPROM contents.
-    FocusEEPROMCommand,
+    // FocusEEPROMCommand,
 
     // The boot greeting effect pulses the LED button for 10 seconds after the
     // keyboard is first connected
     BootGreetingEffect,
+
     // The hardware test mode, which can be invoked by tapping Prog, LED and the
     // left Fn button at the same time.
     HardwareTestMode,
-
-    // LEDControl provides support for other LED modes
-    LEDControl,
 
     Qukeys,     // dual-use keys; should be first to minimize typing event collisions
     OneShot,    // sticky modifiers
@@ -573,7 +575,7 @@ void setup() {
     // one wants to use these layers, just set the default layer to one in EEPROM,
     // by using the `settings.defaultLayer` Focus command, or by using the
     // `keymap.onlyCustom` command to use EEPROM layers only.
-    EEPROMKeymap.setup(5);
+    // EEPROMKeymap.setup(5);
 
     // We need to tell the Colormap plugin how many layers we want to have custom
     // maps for. To make things simple, we set it to five layers, which is how
