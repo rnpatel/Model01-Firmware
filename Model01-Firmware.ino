@@ -9,13 +9,6 @@
 #define KEYCHORD_HYPER LSHIFT(LALT(LGUI(Key_LeftControl)))
 #define KEYCHORD_MEH   LSHIFT(LALT(Key_LeftGui))
 
-// #define ENABLE_MOUSEKEYS
-// #define ENABLE_CHASE
-// #define ENABLE_RAINBOW
-// #define ENABLE_BREATHE
-// #define ENABLE_STALKER
-// #define ENABLE_ALPHASQUARE
-
 /**
  * These #include directives pull in the Kaleidoscope firmware core,
  * as well as the Kaleidoscope plugins we use in the Model 01's firmware
@@ -64,7 +57,7 @@
 #include "Kaleidoscope-Colormap.h"
 
 // Support for Keyboardio's internal keyboard testing mode
-#include "Kaleidoscope-Model01-TestMode.h"
+#include "Kaleidoscope-HardwareTestMode.h"
 
 // Support for host power management (suspend & wakeup)
 #include "Kaleidoscope-HostPowerManagement.h"
@@ -110,10 +103,10 @@ enum { TAPDANCE_LEFT_BRACKET,
   * defined as part of the USB HID Keyboard specification. You can find the names
   * (if not yet the explanations) for all the standard `Key_` defintions offered by
   * Kaleidoscope in these files:
-  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_keyboard.h
-  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_consumerctl.h
-  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_sysctl.h
-  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/key_defs_keymaps.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/kaleidoscope/key_defs_keyboard.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/kaleidoscope/key_defs_consumerctl.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/kaleidoscope/key_defs_sysctl.h
+  *    https://github.com/keyboardio/Kaleidoscope/blob/master/src/kaleidoscope/key_defs_keymaps.h
   *
   * Additional things that should be documented here include
   *   using ___ to let keypresses fall through to the previously active layer
@@ -302,7 +295,7 @@ KEYMAPS(
         //
         // right hand
         //
-        Consumer_Mute,            Key_F6,            Key_F7,                     Key_F8,                  Key_F9,                 Key_F10, ___,
+        Consumer_Mute,            Key_F6,            Key_F7,                     Key_F8,                  Key_F9,                 Key_F10, Key_Backspace,
         Consumer_VolumeIncrement, XXX,               Key_PageUp,                 Key_UpArrow,             Key_PageDown,           XXX,     Key_F11,
                                   XXX,               Key_LeftArrow,              Key_DownArrow,           Key_RightArrow,         XXX,     Key_F12,
         Consumer_VolumeDecrement, Key_PcApplication, Consumer_ScanPreviousTrack, Consumer_PlaySlashPause, Consumer_ScanNextTrack, XXX,     XXX,
@@ -357,12 +350,12 @@ static void anyKeyMacro(uint8_t keyState) {
   static Key lastKey;
   bool toggledOn = false;
   if (keyToggledOn(keyState)) {
-    lastKey.keyCode = Key_A.keyCode + (uint8_t)(millis() % 36);
+    lastKey.setKeyCode(Key_A.getKeyCode() + (uint8_t)(millis() % 36));
     toggledOn = true;
   }
 
   if (keyIsPressed(keyState))
-    kaleidoscope::hid::pressKey(lastKey, toggledOn);
+    Kaleidoscope.hid().keyboard().pressKey(lastKey, toggledOn);
 }
 
 
@@ -417,13 +410,10 @@ static kaleidoscope::plugin::LEDSolidColor rnpBlue(27, 101, 144);
 void toggleLedsOnSuspendResume(kaleidoscope::plugin::HostPowerManagement::Event event) {
   switch (event) {
   case kaleidoscope::plugin::HostPowerManagement::Suspend:
-    LEDControl.set_all_leds_to({0, 0, 0});
-    LEDControl.syncLeds();
-    LEDControl.paused = true;
+    LEDControl.disable();
     break;
   case kaleidoscope::plugin::HostPowerManagement::Resume:
-    LEDControl.paused = false;
-    LEDControl.refreshAll();
+    LEDControl.enable();
     break;
   case kaleidoscope::plugin::HostPowerManagement::Sleep:
     break;
@@ -446,12 +436,16 @@ void hostPowerManagementEventHandler(kaleidoscope::plugin::HostPowerManagement::
  * `USE_MAGIC_COMBOS` call below.
  */
 enum {
-    // Toggle between Boot (6-key rollover; for BIOSes and early boot) and NKRO
-    // mode.
-    COMBO_TOGGLE_NKRO_MODE
+  // Toggle between Boot (6-key rollover; for BIOSes and early boot) and NKRO
+  // mode.
+  COMBO_TOGGLE_NKRO_MODE,
+  // Enter test mode
+  COMBO_ENTER_TEST_MODE
 };
 
-/** A tiny wrapper, to be used by MagicCombo.
+/** Wrappers, to be used by MagicCombo. **/
+
+/**
  * This simply toggles the keyboard protocol via USBQuirks, and wraps it within
  * a function with an unused argument, to match what MagicCombo expects.
  */
@@ -459,13 +453,25 @@ static void toggleKeyboardProtocol(uint8_t combo_index) {
     USBQuirks.toggleKeyboardProtocol();
 }
 
+/**
+ *  This enters the hardware test mode
+ */
+static void enterHardwareTestMode(uint8_t combo_index) {
+  HardwareTestMode.runTests();
+}
+
+
 /** Magic combo list, a list of key combo and action pairs the firmware should
  * recognise.
  */
 USE_MAGIC_COMBOS({.action = toggleKeyboardProtocol,
                   // Left Fn + Esc + Shift
                   .keys = { R3C6, R2C6, R3C7 }
-    });
+}, {
+  .action = enterHardwareTestMode,
+  // Left Fn + Prog + LED
+  .keys = { R3C6, R0C0, R0C6 }
+});
 
 // First, tell Kaleidoscope which plugins you want to use.
 // The order can be important. For example, LED effects are
@@ -492,10 +498,9 @@ KALEIDOSCOPE_INIT_PLUGINS(
     // The boot greeting effect pulses the LED button for 10 seconds after the
     // keyboard is first connected
     BootGreetingEffect,
-
     // The hardware test mode, which can be invoked by tapping Prog, LED and the
     // left Fn button at the same time.
-    TestMode,
+    HardwareTestMode,
 
     // LEDControl provides support for other LED modes
     LEDControl,
@@ -504,9 +509,6 @@ KALEIDOSCOPE_INIT_PLUGINS(
     OneShot,    // sticky modifiers
     TopsyTurvy, // flipped keys
     TapDance,   // multiple keybindings per key
-
-    // The hardware test mode, which can be invoked by tapping Prog, LED and the left Fn button at the same time.
-    // TestMode,
 
     // LEDControl provides support for other LED modes
     LEDControl,
