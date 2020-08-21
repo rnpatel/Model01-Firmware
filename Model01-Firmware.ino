@@ -243,7 +243,7 @@ KEYMAPS(
         //
         KEYCHORD_HYPER,             Key_6, Key_7, Key_8,     Key_9,         Key_0,         Key_Backspace,
         Key_Enter,                  Key_Y, Key_U, Key_I,     Key_O,         Key_P,         Key_Equals,
-        Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
+                                    Key_H, Key_J, Key_K,     Key_L,         Key_Semicolon, Key_Quote,
         TD(TAPDANCE_RIGHT_BRACKET), Key_N, Key_M, Key_Comma, Key_Period,    Key_Slash,     Key_Minus,
 
         OSM(RightAlt), OSM(RightGui), Key_Backslash, Key_Spacebar,
@@ -518,7 +518,7 @@ KALEIDOSCOPE_INIT_PLUGINS(
     LEDControl,
 
     // We start with the LED effect that turns off all the LEDs.
-    LEDOff,
+    // LEDOff,
 
     // These static effects turn your keyboard's LEDs a variety of colors
     // solidRed, solidOrange, solidYellow, solidGreen, solidBlue, solidIndigo, solidViolet,
